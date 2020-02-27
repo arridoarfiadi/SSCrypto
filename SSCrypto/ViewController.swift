@@ -24,7 +24,7 @@ class ViewController: NSViewController {
 	}
 	
 	@IBAction func decryptButtonClicked(_ sender: Any) {
-		if let decryptedText = cipherTextTextView.string.decrypt(using: privateKeyTextView.string) {
+		if let decryptedText = cipherTextTextView.string.decrypt(using: privateKeyTextView.string.makeSingleLine()) {
 			decryptedTextView.string = decryptedText
 		} else {
 			decryptedTextView.string = "Unable to decrypt"
@@ -32,7 +32,7 @@ class ViewController: NSViewController {
 	}
 	
 	@IBAction func encryptButtonClicked(_ sender: Any) {
-		if let encryptedText = plainTextTextView.string.encrypt(using: pubicKeyTextView.string) {
+		if let encryptedText = plainTextTextView.string.makeSingleLine().encrypt(using: pubicKeyTextView.string.makeSingleLine()) {
 			encryptedTextView.string = encryptedText
 		} else {
 			encryptedTextView.string = "Unable to encrypt"
@@ -42,7 +42,7 @@ class ViewController: NSViewController {
 }
 
 class SMCryptography {
-	internal let KEY_SIZE = 2048
+	internal let KEY_SIZE = 3072
 	internal let KEY_TYPE = kSecAttrKeyTypeRSA
 	internal let ALGORITHM: SecKeyAlgorithm = .rsaEncryptionOAEPSHA512AESGCM
 }
@@ -101,6 +101,14 @@ extension String {
 		guard let data = self.description.data(using: .utf8) as CFData? else {return nil}
 		guard let cipherData = SMEncryptor(publicKeyString: publicKeyString).encrypt(data) else {return nil}
 		return (cipherData as Data).base64EncodedString()
+	}
+	
+	func makeSingleLine() -> String  {
+		var newString = ""
+		for line in self.split(whereSeparator: {$0.isNewline}) {
+			newString += line.replacingOccurrences(of: " ", with: "")
+		}
+		return newString
 	}
 }
 
