@@ -32,7 +32,7 @@ class ViewController: NSViewController {
 	}
 	
 	@IBAction func encryptButtonClicked(_ sender: Any) {
-		if let encryptedText = plainTextTextView.string.makeSingleLine().encrypt(using: pubicKeyTextView.string.makeSingleLine()) {
+		if let encryptedText = plainTextTextView.string.encrypt(using: pubicKeyTextView.string.makeSingleLine()) {
 			encryptedTextView.string = encryptedText
 		} else {
 			encryptedTextView.string = "Unable to encrypt"
